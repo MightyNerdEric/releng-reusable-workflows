@@ -1,0 +1,64 @@
+---
+name: "tox-run"
+description: "Run tox on specific environments"
+
+inputs:
+  tox-dir:
+    description: "Directory containing tox.ini file"
+    required: false
+    default: "."
+  py-version:
+    decription: "Version of python to use"
+    required: false
+    default: "3.12"
+  tox-envs:
+    description: "Tox envs to run on this py-version"
+    required: true
+  parallel:
+    description: "Whether to run jobs in parallel"
+    required: false
+    default: "true"
+
+runs:
+  using: "composite"
+  steps:
+    - id: setup-python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.py-version }}
+    - id: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install tox
+        pip freeze
+    - id: Run tox
+      # yamllint disable rule:line-length
+      run: |
+        cd "${GITHUB_WORKSPACE}/${{ inputs.tox-dir }}" || exit 1
+
+        if [[ -f "requirements.txt" ]]; then
+            pip install -r requirements.txt
+        fi
+        if [[ -f "requirements-test.txt" ]]; then
+            pip install -r requirements.txt
+        fi
+
+        PARALLEL=${{ inputs.parallel }}
+        TOX_OPTIONS_LIST=""
+        if [[ -n ${{ inputs.tox-envs }} ]]; then
+            TOX_OPTIONS_LIST=${TOX_OPTIONS_LIST}" -e ${{ inputs.tox-envs }}"
+        fi;
+        case ${PARALLEL,,} in
+            true|auto )
+                TOX_OPTIONS_LIST=$TOX_OPTIONS_LIST" --parallel auto --parallel-live";;
+            all )
+                TOX_OPTIONS_LIST=$TOX_OPTIONS_LIST" --parallel all --parallel-live";;
+            [0-9]* )
+                TOX_OPTIONS_LIST=$TOX_OPTIONS_LIST" --parallel ${PARALLEL} --parallel-live";;
+        esac
+
+        # $TOX_OPTIONS_LIST are intentionnaly not surrounded by quotes
+        # to correcly pass options to tox
+        # shellcheck disable=SC2086
+        tox $TOX_OPTIONS_LIST
+      # yamllint enable rule:line-length
