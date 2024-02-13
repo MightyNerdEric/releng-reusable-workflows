@@ -67,9 +67,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y tree
-          tree
+          tree -a
       - name: Run tox
-        uses: ./reusable-tox-run-action
+        uses: ./reusable-tox-run-action/.github/actions/tox-run-action
         with:
           tox-dir: ${{ inputs.TOX_DIR }}
           py-version: ${{ inputs.PYTHON_VERSION }}
