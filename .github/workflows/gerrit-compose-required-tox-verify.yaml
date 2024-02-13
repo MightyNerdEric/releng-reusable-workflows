@@ -5,43 +5,6 @@ name: Compose Tox Verify
 on:
   workflow_call:
     inputs:
-      # gerrit-to-platform required
-      GERRIT_BRANCH:
-        description: "Branch that change is against"
-        required: true
-        type: string
-      GERRIT_CHANGE_ID:
-        description: "The ID for the change"
-        required: true
-        type: string
-      GERRIT_CHANGE_NUMBER:
-        description: "The Gerrit number"
-        required: true
-        type: string
-      GERRIT_CHANGE_URL:
-        description: "URL to the change"
-        required: true
-        type: string
-      GERRIT_EVENT_TYPE:
-        description: "Type of Gerrit event"
-        required: true
-        type: string
-      GERRIT_PATCHSET_NUMBER:
-        description: "The patch number for the change"
-        required: true
-        type: string
-      GERRIT_PATCHSET_REVISION:
-        description: "The revision sha"
-        required: true
-        type: string
-      GERRIT_PROJECT:
-        description: "Project in Gerrit"
-        required: true
-        type: string
-      GERRIT_REFSPEC:
-        description: "Gerrit refspec of change"
-        required: true
-        type: string
       # Inputs passed to tox-run-action.
       # These should be defined by the calling workflow ("with:"), not listed
       # as inputs.
@@ -92,17 +55,9 @@ jobs:
         tox-env: ${{ fromJSON(inputs.TOX_ENVS) }}
 
     steps:
-      - name: Gerrit checkout
-        # yamllint disable-line rule:line-length
-        uses: lfit/checkout-gerrit-change-action@95c493e8fd60233fac7b9c99ebe5f60e9a8c555b  # v0.7
-        with:
-          gerrit-refspec: ${{ inputs.GERRIT_REFSPEC }}
-          gerrit-project: ${{ inputs.GERRIT_PROJECT }}
-          gerrit-url: ${{ vars.GERRIT_URL }}
-          delay: "0s"
-          repository: ${{ inputs.TARGET_REPO }}
-          ref: refs/heads/${{ inputs.GERRIT_BRANCH }}
-      - name: Actions checkout  # Needed for local action reference
+      - name: Repo checkout
+        uses: actions/checkout@v4
+      - name: Action checkout  # Needed for local action reference
         uses: actions/checkout@v4
         with:
           repository: lfit/releng-reusable-workflows
