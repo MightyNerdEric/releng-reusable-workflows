@@ -60,14 +60,10 @@ jobs:
       - name: Action checkout  # Needed for local action reference
         uses: actions/checkout@v4
         with:
-          repository: lfit/releng-reusable-workflows
+          repository: mightynerderic/releng-reusable-workflows
           sparse-checkout: .github/actions/tox-run-action
           path: reusable-tox-run-action
-      - name: Print workspace tree
-        run: |
-          sudo apt update
-          sudo apt install -y tree
-          tree -a
+          ref: tox-test
       - name: Run tox
         uses: ./reusable-tox-run-action/.github/actions/tox-run-action
         with:
