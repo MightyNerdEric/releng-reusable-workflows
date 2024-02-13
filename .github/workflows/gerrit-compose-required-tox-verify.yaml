@@ -63,6 +63,11 @@ jobs:
           repository: lfit/releng-reusable-workflows
           sparse-checkout: .github/actions/tox-run-action
           path: reusable-tox-run-action
+      - name: Print workspace tree
+        run: |
+          sudo apt update
+          sudo apt install -y tree
+          tree
       - name: Run tox
         uses: ./reusable-tox-run-action
         with:
