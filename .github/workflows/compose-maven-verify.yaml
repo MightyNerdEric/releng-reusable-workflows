@@ -124,19 +124,10 @@ jobs:
         uses: infovista-opensource/vars-to-env-action@1.0.0
         with:
           secrets: ${{ inputs.ENV_SECRETS }}
-      - name: Obtain global settings file
-        # yamllint disable rule:line-length
+      - name: Create global settings file
         run: |
-          if [[ "${{ vars.ORGANIZATION }}" == "opendaylight" ]]; then
-              CI_REPO="releng-builder"
-          else
-              CI_REPO="ci-management"
-          fi
-          wget -q -O settings.xml "https://raw.githubusercontent.com/${{ vars.ORGANIZATION }}/${CI_REPO}/master/jenkins-config/managed-config-files/globalMavenSettings/global-settings/content"
-          sed -i 's#\^${#${#' settings.xml
-        # yamllint enable rule:line-length
+          echo "${{ vars.MVN_GLOBAL_SETTINGS }}" > settings.xml
       - name: Build code with Maven
-        # yamllint disable rule:line-length
         uses: Best-Quality-Engineering/ci-maven-action@v1
         with:
           phases: ${{ inputs.MVN_PHASES }}
@@ -144,7 +135,6 @@ jobs:
           profiles: ${{ inputs.MVN_PROFILES }}
           maven-opts: ${{ inputs.MVN_OPTS }}
           settings-file: settings.xml
-        # yamllint enable rule:line-length
       - name: Generate JaCoCo Badge
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2
