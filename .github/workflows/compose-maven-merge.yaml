@@ -127,6 +127,8 @@ jobs:
       - name: Create global settings file
         run: |
           echo "${{ vars.MVN_GLOBAL_SETTINGS }}" > settings.xml
+          cat settings.xml
+          cat "${{ inputs.MVN_POM_FILE }}"
 
       - name: Build code with Maven
         uses: Best-Quality-Engineering/ci-maven-action@v1
