@@ -106,7 +106,7 @@ jobs:
       - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c  # v5.0.0
         id: setup-python
         with:
-          python-version: "3.8"
+          python-version: "3.10"
       - name: Setup JDK ${{ inputs.JDK_VERSION }}
         uses: actions/setup-java@v3
         with:
@@ -138,8 +138,8 @@ jobs:
           profiles: ${{ inputs.MVN_PROFILES }}
           maven-opts: ${{ inputs.MVN_OPTS }}
           settings-file: settings.xml
-          sha1: -${{github.run_id}}
-          goals: tools.bestquality:ci-maven-plugin:0.0.20:expand-pom
+          # sha1: -${{github.run_id}}
+          # goals: tools.bestquality:ci-maven-plugin:0.0.20:expand-pom
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
